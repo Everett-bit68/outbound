@@ -11,17 +11,46 @@ async function getWeatherData(){
     }
 }
 function displayWeather(current) {
-    document.getElementById("loading").classlist.add("hidden");
-    document.getElementById("weatherInfo").classlist.remove("hidden");
-    document.getElementById("tempValue").innerText = current.temperature_2m;
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("weather-info").classList.remove("hidden");
+    document.getElementById("locationName").innerText="Singapore";
+    document.getElementById("tempvalue").innerText = `${current.temperature_2m}°C`;
     let condition = "Clear & Sunny ☀️";
     if (current.precipitation > 0) condition = "Rainy / Wet 🌧️";
     else if(current.wind_speed_10m > 20) condition = "Windy 💨";
-    document.getElementById("conditionText").innerText = condition;
+    document.getElementById("condition-Text").innerText = condition;
     let score = 100;
     if(current.precipitation >0) score -=40;
     if (current.temperature_2m < 15 || current.temperature_2m > 35) score -=20;
     if (current.wind_speed_10m > 25) score -= 20;
-    document.getElementById("outsideScore").querySelector("span").innerText = `${score/100}`;
+    const finalScore = Math.max(0, score);
+    document.getElementById("outsideScore").innerHTML= `Outside Score: <span>${finalScore}/100</span>`;
+    renderActivities(finalScore);
+}
+function renderActivities(score){
+    const list = document.getElementById("activity-list");
+    if(!list) return;
+    list.innerHTML ="";
+
+    const activities = [
+        { name: "Jogging", min: 70},
+        { name: "Cycling", min: 80},
+        { name: "Park Walk", min: 50},
+        { name: "Photography", min: 60}
+    ];
+    activities.forEach(act =>{
+        const card = document.createElement("div");
+        card.className = "activity-card";
+        let status = "Great Condition!";
+        if (score < act.min && score >=40){
+            card.className +=" caution";
+            status = "Proceed with caution";
+        } else if (score < 40){
+            card.className += " avoid";
+            status = "Not recommended";
+        }
+        card.innerHTML = `<h4>${act.name}</h4><p>${status}</p>`;
+        list.appendChild(card);
+    });
 }
 getWeatherData();
