@@ -1,5 +1,31 @@
 const LAT = 1.3521;
 const LON = 103.8198;
+
+document.addEventListener("DOMContentLoaded",()=>{
+    getUserLocation();
+});
+
+function getUserLocation(){
+    const locationNameEl =document.getElementById("locationName");
+    if(navigator.geolocation){
+        locationNameEl.innerText ="Detecting location...";
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                fetchWeatherData(lat,lon,"Your live Location"); 
+            },
+            (error) => {
+                console.warn("Geolocation permission denied or failed. Using default location.", error);
+                fetchWeatherData(DEFAULT_LAT, DEFAULT_LON, "Singapore");
+            }
+        );
+    } else{
+        console.warn("Geolocation not supported. Using default location.");
+        fetchWeatherData(DEFAULT_LAT, DEFAULT_LON, "Singapore");
+    }
+}
+
 async function getWeatherData(){
     try{
         const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code`);
@@ -10,10 +36,11 @@ async function getWeatherData(){
         document.getElementById("loading").innerText = "failed to load weather data.";
     }
 }
-function displayWeather(current) {
+
+function displayWeather(current, locationName) {
     document.getElementById("loading").classList.add("hidden");
     document.getElementById("weather-info").classList.remove("hidden");
-    document.getElementById("locationName").innerText="Singapore";
+    document.getElementById("locationName").innerText= locationName;
     document.getElementById("tempvalue").innerText = `${current.temperature_2m}°C`;
     let condition = "Clear & Sunny ☀️";
     if (current.precipitation > 0) condition = "Rainy / Wet 🌧️";
@@ -27,6 +54,7 @@ function displayWeather(current) {
     document.getElementById("outsideScore").innerHTML= `Outside Score: <span>${finalScore}/100</span>`;
     renderActivities(finalScore);
 }
+
 function renderActivities(score){
     const list = document.getElementById("activity-list");
     if(!list) return;
@@ -53,4 +81,3 @@ function renderActivities(score){
         list.appendChild(card);
     });
 }
-getWeatherData();
