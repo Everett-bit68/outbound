@@ -1,5 +1,5 @@
-const LAT = 1.3521;
-const LON = 103.8198;
+const DEFAULT_LAT = 1.3521;
+const DEFAULT_LON = 103.8198;
 
 document.addEventListener("DOMContentLoaded",()=>{
     getUserLocation();
@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded",()=>{
 function getUserLocation(){
     const locationNameEl =document.getElementById("locationName");
     if(navigator.geolocation){
+        const options = {
+            timeout: 5000,
+            maximumAge: 0
+        };
         locationNameEl.innerText ="Detecting location...";
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -17,7 +21,7 @@ function getUserLocation(){
             },
             (error) => {
                 console.warn("Geolocation permission denied or failed. Using default location.", error);
-                fetchWeatherData(DEFAULT_LAT, DEFAULT_LON, "Singapore");
+                fetchWeatherData(lat, lon, "Your live location");
             }
         );
     } else{
@@ -26,11 +30,11 @@ function getUserLocation(){
     }
 }
 
-async function getWeatherData(){
+async function fetchWeatherData(lat,lon,locationDisplayName){
     try{
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code`);
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code`);
         const data = await response.json();
-        displayWeather(data.current);
+        displayWeather(data.current, locationDisplayName);
     } catch(error){
         console.error("Error fetching weather:", error);
         document.getElementById("loading").innerText = "failed to load weather data.";
