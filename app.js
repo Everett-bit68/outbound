@@ -25,7 +25,7 @@ async function searchCity(cityName){
         const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`)
         const data = await response.json();
         if(data.results && data.results.length>0){
-            const result = data.result[0];
+            const result = data.results[0];
             const displayName = result.country? `${result.name}, ${result.country}` : result.name;
             fetchWeatherData(result.latitude, result.longitude, displayName);
         } else {
@@ -52,7 +52,7 @@ function getUserLocation(){
             },
             (error) => {
                 console.warn("Geolocation permission denied or failed. Using default location.", error);
-                fetchWeatherData(lat, lon, "Your live location");
+                fetchWeatherData(DEFAULT_LAT, DEFAULT_LON, "Singapore");
             }
         );
     } else{
