@@ -3,8 +3,39 @@ const DEFAULT_LON = 103.8198;
 
 document.addEventListener("DOMContentLoaded",()=>{
     getUserLocation();
+    const searchForm = document.getElementById("searchForm");
+    if (searchForm){
+        searchForm.addEventListener("submit",(e)=>{
+            e.preventDefault();
+            const cityInput = document.getElementById("cityInput").value.trim();
+            if (cityInput){
+                searchCity(cityInput);
+            }
+        });
+    }
 });
 
+async function searchCity(cityName){
+    const loadingEl = document.getElementById("loading");
+    const weatherInfoEl = document.getElementById("weather-info");
+    loadingEl.innerText = `Searching for ${cityName}...`;
+    loadingEl.classList.remove('hidden');
+    weatherInfoEl.classList.add("hidden");
+    try{
+        const response = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`)
+        const data = await response.json();
+        if(data.results && data.results.length>0){
+            const result = data.result[0];
+            const displayName = result.country? `${result.name}, ${result.country}` : result.name;
+            fetchWeatherData(result.latitude, result.longitude, displayName);
+        } else {
+            loadingEl.innerText = `City "${cityName}" not found. Try another search.`;
+        }
+    } catch (error){
+        console.error("Geocoding fetch error;", error);
+        loadingEl.innerText = "Error searching for city.";
+    }
+}
 function getUserLocation(){
     const locationNameEl =document.getElementById("locationName");
     if(navigator.geolocation){
