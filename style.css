@@ -83,7 +83,7 @@ header p {
 .hidden{
     display: none;
 }
-#themetoggle{
+#themeToggle{
     margin-top: 12px;
     padding: 6px 14px;
     border-radius: 16px;
@@ -117,7 +117,7 @@ body.dark-mode #cityInput{
     color: #f8fafc;
     border-color: #475569;
 }
-body.dark-mode #themetoggle{
+body.dark-mode #themeToggle{
     background-color: #1e293b;
     border-color: #475569;
     color: #f8fafc;

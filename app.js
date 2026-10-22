@@ -2,6 +2,7 @@ const DEFAULT_LAT = 1.3521;
 const DEFAULT_LON = 103.8198;
 
 document.addEventListener("DOMContentLoaded",()=>{
+const themeToggle = document.getElementById("themeToggle");
 if(themeToggle){
     if(localStorage.getItem("theme")==="dark"){
         document.body.classList.add("dark-mode");
