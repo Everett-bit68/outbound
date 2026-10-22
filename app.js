@@ -2,6 +2,23 @@ const DEFAULT_LAT = 1.3521;
 const DEFAULT_LON = 103.8198;
 
 document.addEventListener("DOMContentLoaded",()=>{
+if(themeToggle){
+    if(localStorage.getItem("theme")==="dark"){
+        document.body.classList.add("dark-mode");
+        themeToggle.innerText = "☀️Light Mode";
+    }
+    themeToggle.addEventListener("click",()=>{
+        document.body.classList.toggle("dark-mode");
+        const isDarkMode = document.body.classList.contains("dark-mode");
+        if (isDarkMode){
+            themeToggle.innerText ="☀️Light Mode";
+            localStorage.setItem("theme", "dark");
+        } else{
+            themeToggle.innerText ="🌙Dark mode";
+            localStorage.setItem("theme","light");
+        }
+    });
+}
     getUserLocation();
     const searchForm = document.getElementById("searchForm");
     if (searchForm){

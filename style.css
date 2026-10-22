@@ -83,3 +83,42 @@ header p {
 .hidden{
     display: none;
 }
+#themetoggle{
+    margin-top: 12px;
+    padding: 6px 14px;
+    border-radius: 16px;
+    border: 1px solid #ccc;
+    background: transparent;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+body.dark-mode{
+    background-color: #0f172a;
+    color: #f8fafc;
+}
+body.dark-mode header h1,
+body.dark-mode .recommendations h3{
+    color: #38bdf8;
+}
+body.dark-mode .weather-card,
+body.dark-mode .activity-card{
+    background-color: #1e293b;
+    color: #f8fafc;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+body.dark-mode .score-badge{
+    background-color: #334155;
+    color: #38bdf8;
+}
+body.dark-mode #cityInput{
+    background-color: #1e293b;
+    color: #f8fafc;
+    border-color: #475569;
+}
+body.dark-mode #themetoggle{
+    background-color: #1e293b;
+    border-color: #475569;
+    color: #f8fafc;
+}
