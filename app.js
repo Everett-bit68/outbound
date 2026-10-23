@@ -81,13 +81,43 @@ function getUserLocation(){
 
 async function fetchWeatherData(lat,lon,locationDisplayName){
     try{
-        const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code`);
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`;
+        const response = await fetch(url);
         const data = await response.json();
         displayWeather(data.current, locationDisplayName);
+
+        if(data.daily){
+            renderForecast(data.daily);
+        }
     } catch(error){
         console.error("Error fetching weather:", error);
         document.getElementById("loading").innerText = "failed to load weather data.";
     }
+}
+function renderForecast(daily){
+    console.log("renderForecast called with data:", daily);
+    const grid = document.getElementById("forecast-grid");
+    if (!grid){
+        console.error("Error, #forecast-grid element not found in HTML!")
+        return;
+    } 
+    grid.innerHTML = "";
+    const dates = daily.time;
+    const maxTemps = daily.temperature_2m_max;
+    const minTemps = daily.temperature_2m_min;
+    const precips = daily.precipitation_sum;
+    dates.forEach((dateStr, i)=>{
+        const dateObj = new Date(dateStr);
+        const dayName = i === 0? "Today": dateObj.toLocaleDateString("en-US",{weekday: "short", month: "short",day:"numeric"});
+        const card=document.createElement("div");
+        card.className="forecast-card";
+        card.innerHTML = `
+        <div class="date">${dayName}</div>
+        <div class="temp-range">${Math.round(minTemps[i])}°C - ${Math.round(maxTemps[i])}°C</div>
+        <div class="precip">🌧️ ${precips[i]} mm precip</div>
+        `;
+        grid.appendChild(card);
+    })
 }
 
 function displayWeather(current, locationName) {
