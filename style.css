@@ -244,7 +244,7 @@ body.dark-mode .forecast-card .precip{
 body.dark-mode .hourly-section h3{
     color: #38bdf8;
 }
-body.cark-mode .hourly-card{
+body.dark-mode .hourly-card{
     background-color: #1e293b;
     color: #f8fafc;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
