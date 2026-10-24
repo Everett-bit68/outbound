@@ -81,13 +81,16 @@ function getUserLocation(){
 
 async function fetchWeatherData(lat,lon,locationDisplayName){
     try{
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`;
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`;
         const response = await fetch(url);
         const data = await response.json();
         displayWeather(data.current, locationDisplayName);
 
         if(data.daily){
             renderForecast(data.daily);
+        }
+        if (data.hourly){
+            renderHourlyForecast(data.hourly);
         }
     } catch(error){
         console.error("Error fetching weather:", error);
@@ -119,7 +122,35 @@ function renderForecast(daily){
         grid.appendChild(card);
     })
 }
-
+function renderHourlyForecast(hourly){
+    const container = document.getElementById("hourlyGrid");
+    if (!container) return;
+    container.innerHTML = "";
+    const times = hourly.time;
+    const temps = hourly.temperature_2m;
+    const precips = hourly.precipitation_probability;
+    const now = new Date();
+    let startIndex = 0;
+    for (let i=0; i<times.length; i++){
+        if (new Date(times[i])>= now){
+            startIndex = i;
+            break;
+        }
+    }
+    const endIndex = Math.min(startIndex + 24, times.length);
+    for (let i = startIndex; i<endIndex; i++){
+        const dateObj = new Date(times[i]);
+        const timeString = dateObj.toLocaleTimeString("en-US",{hour: "numeric", hour12:true});
+        const card = document.createElement("div");
+        card.className = "hourly-card";
+        card.innerHTML = `
+        <div class="time">${timeString}</div>
+        <div class="temp">${Math.round(temps[i])}°C</div>
+        <div class="precip-prob">🌧️ ${precips[i]}%</div>
+        `;
+        container.appendChild(card);
+    }
+}
 function displayWeather(current, locationName) {
     document.getElementById("loading").classList.add("hidden");
     document.getElementById("weather-info").classList.remove("hidden");
