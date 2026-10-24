@@ -160,6 +160,22 @@ function displayWeather(current, locationName) {
     if (current.precipitation > 0) condition = "Rainy / Wet 🌧️";
     else if(current.wind_speed_10m > 20) condition = "Windy 💨";
     document.getElementById("condition-Text").innerText = condition;
+
+    const alertEl = document.getElementById("weatherAlert");
+    alertEl.className = "alert-banner hidden";
+    if(current.precipitation > 2.0){
+        alertEl.innerText = "⚠️ Heavy rainfall detected. Consider staying indoors!";
+        alertEl.classList.add("danger","alert-banner");
+        alertEl.classList.remove("hidden");
+    } else if (current.wind_speed_10m > 25){
+        alertEl.innerText = "💨 High wind speeds advisory in effect.";
+        alertEl.classList.add("warning","alert-banner");
+        alertEl.classList.remove("hidden");
+    } else if(current.temperature_2m > 35){
+        alertEl.innerText = "🔥 High temperature warning. Stay hydrated";
+        alertEl.classList.add("warning","alert-banner");
+        alertEl.classList.remove("hidden");
+    }
     let score = 100;
     if(current.precipitation >0) score -=40;
     if (current.temperature_2m < 15 || current.temperature_2m > 35) score -=20;
