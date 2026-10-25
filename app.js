@@ -81,10 +81,15 @@ function getUserLocation(){
 
 async function fetchWeatherData(lat,lon,locationDisplayName){
     try{
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=3&timezone=auto`;
-        const response = await fetch(url);
-        const data = await response.json();
-        displayWeather(data.current, locationDisplayName);
+        const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,uv_index_max&forecast_days=3&timezone=auto`;
+        const airQualityUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm2_5`;
+        const [weatherRes, airQualityRes] = await Promise.all([
+            fetch(weatherUrl),
+            fetch(airQualityUrl)
+        ]);
+        const data = await weatherRes.json();
+        const airData = await airQualityRes.json();
+        displayWeather(data.current,locationDisplayName);
 
         if(data.daily){
             renderForecast(data.daily);
@@ -92,9 +97,48 @@ async function fetchWeatherData(lat,lon,locationDisplayName){
         if (data.hourly){
             renderHourlyForecast(data.hourly);
         }
+        const maxUvToday = data.daily?.uv_index_max?.[0] ?? 0;
+        const currentPm25 = airData.current?.pm2_5 ?? 0;
+        renderEnvironmentMetrics(maxUvToday,currentPm25);
     } catch(error){
         console.error("Error fetching weather:", error);
         document.getElementById("loading").innerText = "failed to load weather data.";
+    }
+}
+function renderEnvironmentMetrics(uvIndex, pm25){
+    const uvValueEl = document.getElementById("uvValue");
+    const uvstatusEl = document.getElementById("uvStatus");
+    const aqiValueEl = document.getElementById("aqiValue");
+    const aqiStatusEl = document.getElementById("aqiStatus");
+    if (!uvValueEl || !aqiValueEl) return;
+    uvValueEl.innerText = `${uvIndex.toFixed(1)}`;
+    uvstatusEl.className = "metric-status";
+
+    if(uvIndex <=2){
+        uvstatusEl.innerText = "Low Risk 🟢";
+        uvstatusEl.classList.add("good");
+    } else if (uvIndex <= 5){
+        uvstatusEl.innerText = "Moderate Risk 🟡";
+        uvstatusEl.classList.add("moderate");
+    } else if (uvIndex <= 7) {
+        uvstatusEl.innerText = "High Risk 🟠";
+        uvstatusEl.classList.add("moderate");
+    } else {
+        uvstatusEl.innerText = "Very High/Extreme Risk 🔴";
+        uvstatusEl.classList.add("unhealthy");
+    }
+    aqiValueEl.innerText = `${pm25.toFixed(1)} µg/m³`;
+    aqiStatusEl.innerText = "metric-status";
+
+    if(pm25 <=12){
+        aqiStatusEl.innerText = "Good Air Quality 🟢";
+        aqiStatusEl.classList.add("good");
+    } else if (pm25 <= 35.4){
+        aqiStatusEl.innerText = "Moderate Air Quality 🟡";
+        aqiStatusEl.classList.add("moderate");
+    } else {
+        aqiStatusEl.innerText = "Unhealthy Air Quality 🔴";
+        aqiStatusEl.classList.add("unhealthy");
     }
 }
 function renderForecast(daily){
