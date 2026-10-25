@@ -1,4 +1,4 @@
-Outbound – Outdoor Activity Planner 🌤️
+Outbound
 
 Outbound is a web-based outdoor activity planner that helps users understand current weather conditions and decide when to go outside. It uses weather and air-quality data from Open-Meteo APIs to provide forecasts, environmental information, and activity recommendations.
 
