@@ -1,6 +1,25 @@
 const DEFAULT_LAT = 1.3521;
 const DEFAULT_LON = 103.8198;
 
+let currentWeatherData = null;
+let selectedActivity = "all";
+
+document.addEventListener("DOMContentLoaded",()=>{
+    const filterBar = document.getElementById("activityFilterBar");
+    if (filterBar){
+        filterBar.addEventListener("click",(e)=>{
+            if(e.target.classList.contains("filter-btn")){
+                document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
+                e.target.classList.add("active");
+                selectedActivity = e.target.getAttribute("data-activity");
+
+                if (currentWeatherData){
+                    evaluateActivitySuitability(currentWeatherData);
+                }
+            }
+        });
+    }
+});
 document.addEventListener("DOMContentLoaded",()=>{
 const themeToggle = document.getElementById("themeToggle");
 if(themeToggle){
@@ -246,6 +265,7 @@ function displayWeather(current, locationName) {
     document.getElementById("weather-info").classList.remove("hidden");
     document.getElementById("locationName").innerText= locationName;
     document.getElementById("tempvalue").innerText = `${current.temperature_2m}°C`;
+    evaluateActivitySuitability(current);
     let condition = "Clear & Sunny ☀️";
     if (current.precipitation > 0) condition = "Rainy / Wet 🌧️";
     else if(current.wind_speed_10m > 20) condition = "Windy 💨";
@@ -300,4 +320,85 @@ function renderActivities(score){
         card.innerHTML = `<h4>${act.name}</h4><p>${status}</p>`;
         list.appendChild(card);
     });
+}
+function evaluateActivitySuitability(weather){
+    const detailsEl = document.getElementsById("activityDetails");
+    if (!detailsEl) return;
+    const temp = weather.temperature_2m;
+    const precip = weather.precipitation;
+    const wind = weather.wind_speed_10m;
+    let title="";
+    let status ="";
+    let advice = "";
+    switch (selectedActivity){
+        case "running":
+            title = "🏃 Running & Jogging";
+            if(precip>0){
+                status ="❌ Not Recommended";
+                advice ="Slippery roads and rain ahead. Indoor treadmill workouts are safer today.";
+            } else if (temp < 10) {
+                status ="⚠️Caution Needed";
+                advice ="Warm conditions. Run early morning or late evening and carry hydration.";
+            } else if (temp<10){
+                status = "⚠️ Dress Warmly";
+                advice = "Chilly weather. Wear layered performance gear.";
+            } else {
+                status = "✅ Ideal Conditinons";
+                advice = "Crisp, clear air and mild temps make this a fantastic time for a run!";
+            }
+            break;
+        case "cycling":
+            title = "🚴Road Cycling";
+            if (wind > 25){
+                status = "❌ Hazardous Winds";
+                advice = "Strong gusty winds make road cycling difficult and unsafe.";
+            } else if (precip > 0.5){
+                status = "❌ Wet Roads";
+                advice = "Wet pavement reduces tire traction and visibility.";
+            } else {
+                status = "✅ Great for Cycling";
+                advice = "Manageable wind speeds and clear pavement offer a smooth ride.";
+            }
+            break;
+        case "dining":
+            title = "🍽️ Outdoor Dining";
+            if (precip > 0){
+                status = "❌ Rain Expected";
+                advice = "Patio dining is not viable. Reserve indoor seating instead.";
+            } else if (temp < 16 || temp > 32){
+                status = "⚠️ Uncomfortable Temperature";
+                advice = "Too cold or too hot for comfortable outdoor dining.";
+            } else {
+                status = "✅ Perfect Patio Weather";
+                advice = "Comfortable temperatures and clear skies mean great outdoor dining conditions!";
+            }
+            break;
+        case "photography":
+            title = "📸 Outdoor Photography";
+            if (precip > 2.0){
+                status = "⚠️ Protect Gear";
+                advice = "Rain pose hazards to unsealed camera gear. Great for dramatic rain shots if shielded!";
+            } else if (wind > 30){
+                status = "⚠️ Unstable Tripod Conditions";
+                advice = "High winds make long exposures difficult without heavy ballast.";
+            } else{
+                status = "✅ Great Shooting Conditions";
+                advice = "Favourable lighting and manageable environmental factors.";
+            }
+            break;
+        default:
+            title = "🌐General Outdoor Summary";
+            if (precip >0){
+                status = "🌧️ Wet Conditions";
+                advice = "Indoor activities like museums, gym sessions, or cafes are recommended.";
+            } else{
+                status = "☀️ Clear Outdoor Access";
+                advice = "Good weather access the board for perks, walking, and general outdoor pursuits.";
+            }
+            break;
+    }
+    detailsEl.innerHTML = `
+        <strong>${title}</strong> - <span class="status-badge">${status}</span>
+        <p style="margin-top: 8px; margin-bottom: 0;">${advice}</p>
+    `;
 }

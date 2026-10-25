@@ -269,7 +269,47 @@ header p {
     font-weight: bold;
     color: #2563eb;
 }
-
+.activity-section{
+    margin-bottom: 32px;
+}
+.activity-section h3{
+    margin-bottom: 16px;
+    color: blue;
+}
+.activity-filter-bar{
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.filter-btn{
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filter-btn :hover{
+    background-color: #e2e8f0;
+}
+.filter-btn.active{
+    background-color: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+.activity-card{
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0,0.03);
+    font-size: 15px;
+    line-height: 1.6;
+    color: #334155;
+}
 body.dark-mode .metrics-section h3{
     color: #38bdf8;
 }
@@ -408,4 +448,25 @@ body.dark-mode .best-time-content{
 }
 body.dark-mode .best-time-highlight{
     color: #38bdf8;
+}
+body.dark-mode .activity-section h3{
+    color: #38bdf8;
+}
+body.dark-mode.filter-btn{
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+body.dark-mode.filter-btn:hover{
+    background-color: #334155;
+}
+body.dark-mode.filter-btn.active{
+    background-color: #38bdf8;
+    color: #0f172a;
+    border-color: #38bdf8;
+}
+body.dark-mode.activity-card{
+    background-color: #1e293b;
+    color: #f8fafc;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
