@@ -236,6 +236,40 @@ header p {
     background-color: #fee2e2;
     color: #b91c1c;
 }
+.best-time-section{
+    margin-bottom: 32px;
+}
+.best-time-card{
+    background-color: white;
+    padding: 20px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border-left: 6px solid #3b82f6;
+}
+.best-time-header{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.best-time-header h3{
+    margin: 0;
+    color: navy;
+    font-size: 18px;
+}
+.best-time-header .icon{
+    font-size: 20px;
+}
+.best-time-content{
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.5;
+}
+.best-time-highlight{
+    font-weight: bold;
+    color: #2563eb;
+}
+
 body.dark-mode .metrics-section h3{
     color: #38bdf8;
 }
@@ -360,4 +394,18 @@ body.dark-mode .alert-banner.danger{
     background-color: rgba(220,38,38,0.15);
     color: #f87171;
     border-color: rgba(220,38,38,0.3);
+}
+body.dark-mode .best-time-card{
+    background-color: #1e293b;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    border-left-color: #38bdf8;
+}
+body.dark-mode .best-time-header h3{
+    color: #38bdf8;
+}
+body.dark-mode .best-time-content{
+    color: #cbd5e1;
+}
+body.dark-mode .best-time-highlight{
+    color: #38bdf8;
 }

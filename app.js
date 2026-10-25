@@ -96,6 +96,7 @@ async function fetchWeatherData(lat,lon,locationDisplayName){
         }
         if (data.hourly){
             renderHourlyForecast(data.hourly);
+            calculateBestTime(data.hourly);
         }
         const maxUvToday = data.daily?.uv_index_max?.[0] ?? 0;
         const currentPm25 = airData.current?.pm2_5 ?? 0;
@@ -103,6 +104,51 @@ async function fetchWeatherData(lat,lon,locationDisplayName){
     } catch(error){
         console.error("Error fetching weather:", error);
         document.getElementById("loading").innerText = "failed to load weather data.";
+    }
+}
+function calculateBestTime(hourly){
+    const contentEl=document.getElementById("bestTimeContent");
+    if(!contentEl) return;
+    const times = hourly.time;
+    const temps = hourly.temperature_2m;
+    const precips = hourly.precipitation_probability;
+    const now = new Date();
+    let startIndex = 0;
+
+    for (let i=0; i<times.length; i++){
+        if (new Date(times[i]) >= now){
+            startIndex = i;
+            break;
+        }
+    }
+    const windowScores = [];
+    const maxLookahead = Math.min(startIndex + 12, times.length - 1);
+    for (let i = startIndex; i< maxLookahead; i++){
+        const avgPrecip = (precips[i] + precips[i + 1])/2;
+        const avgTemp = (temps[i] + temps [i + 1]) /2;
+        let score = 100 - avgPrecip;
+        if (avgTemp > 32|| avgTemp < 18){
+            score -=20;
+        }
+        windowScores.push({
+            startIndex: i,
+            score: score,
+            avgPrecip: Math.round(avgPrecip),
+            avgTemp: Math.round(avgTemp)
+        });
+    }
+    if (windowScores.length === 0){
+        contentEl.innerText = "No upcoming hourly data available for today.";
+        return;
+    }
+    windowScores.sort((a,b) => b.score - a.score);
+    const best = windowScores[0];
+    const startTime = new Date(times[best.startIndex]).toLocaleTimeString("en-US",{hour: "numeric", hour12: true});
+    const endTime = new Date(times[best.startIndex + 2]).toLocaleTimeString("en-US",{hour:"numeric", hour12: true});
+    if (best.avgPrecip > 60){
+        contentEl.innerHTML = `Conditions look wet overall today. The best window to step out is around <span class="best-time-highlight">${startTime}- ${endTime}</span> (${best.avgTemp}°C,${best.avgPrecip}%).`;
+    } else{
+        contentEl.innerHTML = `Optimal conditions today are between <span class="best-time-highlight">${startTime} and ${endTime}</span> with comfortable temps (${best.avgTemp}°C) and a low rain chance (${best.avgPrecip}%).`;
     }
 }
 function renderEnvironmentMetrics(uvIndex, pm25){
