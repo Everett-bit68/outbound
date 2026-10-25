@@ -5,6 +5,25 @@ let currentWeatherData = null;
 let selectedActivity = "all";
 
 document.addEventListener("DOMContentLoaded",()=>{
+    const shareBtn = document.getElementById("shareBtn");
+    if(shareBtn){
+        shareBtn.addEventListener("click",()=>{
+            const location = document.getElementById("locationName").innerText;
+            const temp = document.getElementById("tempvalue").innerText;
+            const condition = document.getElementById("condition-text").innerText;
+            const score = document.getElementById("outsideScore").innerText;
+            const shareText = `Outbound Weather Report🌤️ \n 📍 Location: ${location}\n 🌡️ Temp: ${temp}\n✨ Condition: ${condition}\n🎯${score}`;
+            navigator.clipboard.writeText(shareText).then(()=>{
+                const originalText = shareBtn.innerText;
+                shareBtn.innerText = "✅ Copied to clipboard!";
+                setTimeout(()=>{
+
+                },2000);
+            }).catch(err =>{
+                console.error("Failed to copy text:", err);
+            }); 
+        });
+    }
     const filterBar = document.getElementById("activityFilterBar");
     if (filterBar){
         filterBar.addEventListener("click",(e)=>{
