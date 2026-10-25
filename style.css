@@ -225,7 +225,7 @@ header p {
     display: inline-block;
 }
 .metric-status.good{
-    background-color: #dc7ce7;
+    background-color: #dcfce7;
     color: #15803d;
 }
 .metric-status.moderate{
@@ -452,7 +452,7 @@ body.dark-mode .best-time-highlight{
 body.dark-mode .activity-section h3{
     color: #38bdf8;
 }
-body.dark-mode.filter-btn{
+body.dark-mode .filter-btn{
     background-color: #1e293b;
     border-color: #334155;
     color: #cbd5e1;
@@ -465,7 +465,7 @@ body.dark-mode.filter-btn.active{
     color: #0f172a;
     border-color: #38bdf8;
 }
-body.dark-mode.activity-card{
+body.dark-mode .activity-card{
     background-color: #1e293b;
     color: #f8fafc;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);

@@ -193,7 +193,7 @@ function renderEnvironmentMetrics(uvIndex, pm25){
         uvstatusEl.classList.add("unhealthy");
     }
     aqiValueEl.innerText = `${pm25.toFixed(1)} µg/m³`;
-    aqiStatusEl.innerText = "metric-status";
+    aqiStatusEl.className = "metric-status";
 
     if(pm25 <=12){
         aqiStatusEl.innerText = "Good Air Quality 🟢";
@@ -322,7 +322,7 @@ function renderActivities(score){
     });
 }
 function evaluateActivitySuitability(weather){
-    const detailsEl = document.getElementsById("activityDetails");
+    const detailsEl = document.getElementById("activityDetails");
     if (!detailsEl) return;
     const temp = weather.temperature_2m;
     const precip = weather.precipitation;
@@ -336,10 +336,10 @@ function evaluateActivitySuitability(weather){
             if(precip>0){
                 status ="❌ Not Recommended";
                 advice ="Slippery roads and rain ahead. Indoor treadmill workouts are safer today.";
-            } else if (temp < 10) {
+            } else if (temp > 28) {
                 status ="⚠️Caution Needed";
                 advice ="Warm conditions. Run early morning or late evening and carry hydration.";
-            } else if (temp<10){
+            } else if (temp < 10){
                 status = "⚠️ Dress Warmly";
                 advice = "Chilly weather. Wear layered performance gear.";
             } else {
