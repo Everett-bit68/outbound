@@ -4,44 +4,7 @@ const DEFAULT_LON = 103.8198;
 let currentWeatherData = null;
 let selectedActivity = "all";
 
-document.addEventListener("DOMContentLoaded",()=>{
-    const shareBtn = document.getElementById("shareBtn");
-    if(shareBtn){
-        shareBtn.addEventListener("click",()=>{
-            const location = document.getElementById("locationName").innerText;
-            const temp = document.getElementById("tempvalue").innerText;
-            const condition = document.getElementById("condition-text").innerText;
-            const score = document.getElementById("outsideScore").innerText;
-            const shareText = `Outbound Weather Report🌤️ \n 📍 Location: ${location}\n 🌡️ Temp: ${temp}\n✨ Condition: ${condition}\n🎯${score}`;
-            navigator.clipboard.writeText(shareText).then(()=>{
-                const originalText = shareBtn.innerText;
-                shareBtn.innerText = "✅ Copied to clipboard!";
-                setTimeout(()=>{
 
-                },2000);
-            }).catch(err =>{
-                console.error("Failed to copy text:", err);
-            }); 
-        });
-    }
-    const filterBar = document.getElementById("activityFilterBar");
-    if (filterBar){
-        filterBar.addEventListener("click",(e)=>{
-            const btn = e.target.closest(".filter-btn");
-            if (btn) {
-                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-                btn.classList.add("active");
-                selectedActivity = btn.getAttribute("data-activity");
-
-                if (currentWeatherData){
-                    evaluateActivitySuitability(currentWeatherData);
-                } else{
-                    evaluateActivitySuitability({temperature_2m: 25, precipitation: 0, wind_speed_10m: 10});
-                }
-            }
-        });
-    }
-});
 document.addEventListener("DOMContentLoaded",()=>{
 const themeToggle = document.getElementById("themeToggle");
 if(themeToggle){
@@ -61,6 +24,23 @@ if(themeToggle){
         }
     });
 }
+const filterBar = document.getElementById("activityFilterBar");
+    if (filterBar){
+        filterBar.addEventListener("click",(e)=>{
+            const btn = e.target.closest(".filter-btn");
+            if (btn) {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                selectedActivity = btn.getAttribute("data-activity");
+
+                if (currentWeatherData){
+                    evaluateActivitySuitability(currentWeatherData);
+                } else{
+                    evaluateActivitySuitability({temperature_2m: 25, precipitation: 0, wind_speed_10m: 10});
+                }
+            }
+        });
+    }
     getUserLocation();
     const searchForm = document.getElementById("searchForm");
     if (searchForm){
@@ -314,6 +294,12 @@ function displayWeather(current, locationName) {
     if (current.wind_speed_10m > 25) score -= 20;
     const finalScore = Math.max(0, score);
     document.getElementById("outsideScore").innerHTML= `Outside Score: <span>${finalScore}/100</span>`;
+    if (!document.getElementById("shareBtn")){
+        const weatherInfoDiv=document.getElementById("weather-info");
+        const shareDiv = document.createElement("div");
+        shareDiv.innerHTML = `<button id="shareBtn" class="share-btn">Share weather</button>`;
+        weatherInfoDiv.appendChild(shareDiv);
+    }
     renderActivities(finalScore);
 }
 
