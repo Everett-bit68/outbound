@@ -8,13 +8,16 @@ document.addEventListener("DOMContentLoaded",()=>{
     const filterBar = document.getElementById("activityFilterBar");
     if (filterBar){
         filterBar.addEventListener("click",(e)=>{
-            if(e.target.classList.contains("filter-btn")){
-                document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-                e.target.classList.add("active");
-                selectedActivity = e.target.getAttribute("data-activity");
+            const btn = e.target.closest(".filter-btn");
+            if (btn) {
+                document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                selectedActivity = btn.getAttribute("data-activity");
 
                 if (currentWeatherData){
                     evaluateActivitySuitability(currentWeatherData);
+                } else{
+                    evaluateActivitySuitability({temperature_2m: 25, precipitation: 0, wind_speed_10m: 10});
                 }
             }
         });
